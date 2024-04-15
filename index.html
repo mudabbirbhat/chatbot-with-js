@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chatbot</title>
+    <style>
+        #chat-container {
+            width: 320px;
+			
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #chat-messages {
+            padding: 10px;
+            overflow-y: scroll;
+            height: 200px;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
+            align-self: flex-start;
+        }
+
+        #user-input {
+            width: calc(100% - 20px);
+            margin: 0 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: none;
+            border-top: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        #send-button {
+            width: calc(100% - 20px);
+            margin: 0 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .bot-options {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+        .bot-option {
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        let isFirstMessage = true;
+
+        sendButton.addEventListener('click', sendMessage);
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message !== '') {
+                displayMessage(message, 'user');
+                if (isFirstMessage) {
+                    // Display a welcome message and predefined options
+                    displayMessage('Hi there! Welcome to our hospital assistance service. How can I assist you today?', 'bot');
+                    displayBotOptions(['See test results', 'Schedule an appointment with a doctor', 'Find directions to the hospital']);
+                    isFirstMessage = false;
+                } else {
+                    // Respond based on the user's input
+                    handleUserInput(message);
+                }
+                userInput.value = '';
+            }
+        }
+
+        function handleUserInput(userInput) {
+            switch (userInput.toLowerCase()) {
+                case 'see test results':
+                    displayMessage("Your tests have been emailed to you.", 'bot');
+                    displayOptions(["Thank you!", "I have another question."]);
+                    break;
+                case 'schedule an appointment with a doctor':
+                    const doctorName = generateRandomDoctorName();
+                    displayMessage(`Sure, you have an appointment with Dr. ${doctorName} on Thursday at 10:00 AM.`, 'bot');
+                    break;
+                case 'find directions to the hospital':
+                    displayMessage("Sure, the hospital is located at Lilavati Hospital, Bandra.", 'bot');
+                    break;
+                default:
+                    displayMessage("I'm sorry, I didn't understand that. Could you please choose one of the options provided?", 'bot');
+                    break;
+            }
+        }
+
+        function generateRandomDoctorName() {
+            const doctorNames = ["Smith", "Johnson", "Williams", "Brown", "Jones"];
+            return doctorNames[Math.floor(Math.random() * doctorNames.length)];
+        }
+
+        function displayBotOptions(options) {
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('bot-options');
+            options.forEach(option => {
+                const optionButton = document.createElement('div');
+                optionButton.textContent = option;
+                optionButton.classList.add('bot-option');
+                optionButton.addEventListener('click', () => {
+                    displayMessage(`You chose: ${option}`, 'user');
+                    handleUserInput(option);
+                });
+                optionsDiv.appendChild(optionButton);
+            });
+            chatMessages.appendChild(optionsDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function displayOptions(options) {
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('bot-options');
+            options.forEach(option => {
+                const optionButton = document.createElement('div');
+                optionButton.textContent = option;
+                optionButton.classList.add('bot-option');
+                optionButton.addEventListener('click', () => {
+                    displayMessage(option, 'user');
+                    // Optionally, you can handle further actions based on the user's choice here
+                });
+                optionsDiv.appendChild(optionButton);
+            });
+            chatMessages.appendChild(optionsDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function displayMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
